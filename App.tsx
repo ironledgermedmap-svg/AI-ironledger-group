@@ -5,6 +5,7 @@ import { ImageGenerator } from './tools/ImageGenerator';
 import { ProspectingTool } from './tools/ProspectingTool';
 import { FactChecker } from './tools/FactChecker';
 import { FullStackAssistant } from './tools/FullStackAssistant';
+import { GitHubHelper } from './tools/GitHubHelper';
 import { Tool, ToolId } from './types';
 import { TOOLS } from './constants';
 
@@ -27,6 +28,8 @@ const App: React.FC = () => {
         return <FactChecker />;
       case 'full-stack-assistant':
         return <FullStackAssistant />;
+      case 'github-helper':
+        return <GitHubHelper />;
       default:
         return <PostGenerator />;
     }

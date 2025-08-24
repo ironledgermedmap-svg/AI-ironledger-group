@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type ToolId = 'post-generator' | 'image-generator' | 'prospecting-tool' | 'fact-checker' | 'full-stack-assistant';
+export type ToolId = 'post-generator' | 'image-generator' | 'prospecting-tool' | 'fact-checker' | 'full-stack-assistant' | 'github-helper';
 
 export interface Tool {
   id: ToolId;
