@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import JSZip from 'jszip';
-import { GoogleGenerativeAI } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 import type { GeneratedFile } from '../types';
 import { GithubIcon, DownloadIcon } from '../constants';
 
@@ -31,12 +31,14 @@ export const FullStackAssistant: React.FC = () => {
         throw new Error('Gemini API key not configured');
       }
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      const ai = new GoogleGenAI({ apiKey });
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.0-flash-001',
+        contents: prompt,
+      });
+
+      return response.text;
     } catch (error) {
       console.error('AI generation failed:', error);
       throw error;
