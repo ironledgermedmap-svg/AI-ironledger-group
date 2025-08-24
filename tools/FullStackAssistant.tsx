@@ -4,8 +4,13 @@ import type { GeneratedFile } from '../types';
 import { GithubIcon, DownloadIcon } from '../constants';
 import { aiService } from '../src/utils/aiService';
 import { ApiStatus } from '../components/ApiStatus';
+import { GitHubIntegration } from '../components/GitHubIntegration';
+import { githubService, type GitHubRepo } from '../src/utils/githubService';
+
+type GenerationMode = 'create-new' | 'build-from-github' | 'update-existing';
 
 export const FullStackAssistant: React.FC = () => {
+  const [mode, setMode] = useState<GenerationMode>('create-new');
   const [projectDescription, setProjectDescription] = useState('');
   const [framework, setFramework] = useState('react');
   const [styling, setStyling] = useState('tailwind');
@@ -17,12 +22,28 @@ export const FullStackAssistant: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState('');
 
+  // GitHub integration state
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
+  const [repoStructure, setRepoStructure] = useState<any>(null);
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [updateInstructions, setUpdateInstructions] = useState('');
+
   const toggleFeature = (feature: string) => {
-    setFeatures(prev => 
-      prev.includes(feature) 
+    setFeatures(prev =>
+      prev.includes(feature)
         ? prev.filter(f => f !== feature)
         : [...prev, feature]
     );
+  };
+
+  const handleRepoSelected = (repo: GitHubRepo, structure: any) => {
+    setSelectedRepo(repo);
+    setRepoStructure(structure);
+    setGeneratedFiles([]);
+  };
+
+  const handleFilesSelected = (files: string[]) => {
+    setSelectedFiles(files);
   };
 
   const generateWithAI = async (prompt: string): Promise<string> => {
