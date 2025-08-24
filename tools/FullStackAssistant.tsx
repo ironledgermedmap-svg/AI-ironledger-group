@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import JSZip from 'jszip';
-import { GoogleGenAI } from '@google/genai';
 import type { GeneratedFile } from '../types';
 import { GithubIcon, DownloadIcon } from '../constants';
+import { aiService } from '../src/utils/aiService';
 
 export const FullStackAssistant: React.FC = () => {
   const [projectDescription, setProjectDescription] = useState('');
@@ -25,24 +25,13 @@ export const FullStackAssistant: React.FC = () => {
   };
 
   const generateWithAI = async (prompt: string): Promise<string> => {
-    try {
-      const apiKey = window.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-      if (!apiKey || apiKey === '__GEMINI_API_KEY__') {
-        throw new Error('Gemini API key not configured');
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
-
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash-001',
-        contents: prompt,
-      });
-
-      return response.text;
-    } catch (error) {
-      console.error('AI generation failed:', error);
-      throw error;
+    if (!aiService.isAvailable()) {
+      throw new Error('AI service not available. Please configure your Gemini API key.');
     }
+
+    return await aiService.generateContent(prompt, {
+      model: 'gemini-2.0-flash-001'
+    });
   };
 
   const generateProjectStructure = async () => {
