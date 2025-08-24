@@ -10,7 +10,8 @@ export const getGeminiApiKey = (): string | null => {
     return process.env.GEMINI_API_KEY;
   }
   
-  return null;
+  // Fallback to hardcoded key for deployment
+  return 'AlzaSyDMhAL-OCnDLzgdLA9kml9e8tJ4JCLmkNE';
 };
 
 export const isApiKeyConfigured = (): boolean => {

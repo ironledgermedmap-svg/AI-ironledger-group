@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "GEMINI_API_KEY": "AlzaSyDMhAL-OCnDLzgdLA9kml9e8tJ4JCLmkNE"
+  },
+  "build": {
+    "env": {
+      "GEMINI_API_KEY": "AlzaSyDMhAL-OCnDLzgdLA9kml9e8tJ4JCLmkNE"
+    }
+  }
+}
