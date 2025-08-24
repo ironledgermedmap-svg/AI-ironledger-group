@@ -3,6 +3,7 @@ import JSZip from 'jszip';
 import type { GeneratedFile } from '../types';
 import { GithubIcon, DownloadIcon } from '../constants';
 import { aiService } from '../src/utils/aiService';
+import { ApiStatus } from '../components/ApiStatus';
 
 export const FullStackAssistant: React.FC = () => {
   const [projectDescription, setProjectDescription] = useState('');
@@ -589,6 +590,15 @@ export default defineConfig({
 
   return (
     <div className="max-w-7xl mx-auto">
+      <div className="mb-6 p-4 bg-gray-800 border border-gray-600 rounded-lg">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">AI-Powered Code Generation</h2>
+          <ApiStatus />
+        </div>
+        <p className="text-sm text-gray-400 mt-2">
+          Generate production-ready, full-stack applications with the latest AI technology
+        </p>
+      </div>
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div className="xl:col-span-1 space-y-6">
           <div>
