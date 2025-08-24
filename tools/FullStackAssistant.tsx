@@ -104,19 +104,38 @@ Ensure all code is complete and functional, not placeholder or commented code.`;
   };
 
   const generateProject = async () => {
-    if (!projectDescription.trim()) return;
-    
+    if (mode === 'create-new' && !projectDescription.trim()) return;
+    if (mode === 'build-from-github' && !selectedRepo) return;
+    if (mode === 'update-existing' && (!selectedRepo || selectedFiles.length === 0)) return;
+
     setIsGenerating(true);
     setGenerationProgress('Initializing AI code generation...');
-    
+
     try {
-      const prompt = await generateProjectStructure();
-      setGenerationProgress('Generating code with Gemini AI...');
-      
+      let prompt = '';
+      let files: GeneratedFile[] = [];
+
+      switch (mode) {
+        case 'create-new':
+          prompt = await generateProjectStructure();
+          setGenerationProgress('Generating new project with Gemini AI...');
+          break;
+
+        case 'build-from-github':
+          prompt = await generateGitHubAnalysisPrompt();
+          setGenerationProgress('Analyzing GitHub repository and generating enhancements...');
+          break;
+
+        case 'update-existing':
+          prompt = await generateUpdatePrompt();
+          setGenerationProgress('Generating updates for selected files...');
+          break;
+      }
+
       const aiResponse = await generateWithAI(prompt);
-      
+
       setGenerationProgress('Processing generated files...');
-      
+
       // Try to parse JSON response
       let parsedResponse;
       try {
@@ -126,23 +145,33 @@ Ensure all code is complete and functional, not placeholder or commented code.`;
         parsedResponse = JSON.parse(jsonString);
       } catch (parseError) {
         console.error('Failed to parse AI response as JSON:', parseError);
-        // Fallback to enhanced template generation
-        parsedResponse = await generateEnhancedTemplate();
+        // Fallback based on mode
+        if (mode === 'create-new') {
+          parsedResponse = { files: await generateEnhancedTemplate() };
+        } else {
+          parsedResponse = { files: await generateGitHubFallback() };
+        }
       }
 
-      const files: GeneratedFile[] = parsedResponse.files?.map((file: any) => ({
-        fileName: file.path,
-        code: file.content
-      })) || await generateEnhancedTemplate();
+      files = parsedResponse.files?.map((file: any) => ({
+        fileName: file.path || file.fileName,
+        code: file.content || file.code
+      })) || [];
+
+      if (files.length === 0) {
+        files = mode === 'create-new' ? await generateEnhancedTemplate() : await generateGitHubFallback();
+      }
 
       setGeneratedFiles(files);
       setGenerationProgress('');
     } catch (error) {
       console.error('Failed to generate project:', error);
-      setGenerationProgress('AI generation failed, using enhanced template...');
-      
-      // Fallback to enhanced template
-      const fallbackFiles = await generateEnhancedTemplate();
+      setGenerationProgress('AI generation failed, using fallback...');
+
+      // Fallback based on mode
+      const fallbackFiles = mode === 'create-new' ?
+        await generateEnhancedTemplate() :
+        await generateGitHubFallback();
       setGeneratedFiles(fallbackFiles);
       setGenerationProgress('');
     } finally {
